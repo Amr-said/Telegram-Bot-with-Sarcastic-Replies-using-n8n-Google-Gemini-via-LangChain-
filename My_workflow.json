@@ -1,0 +1,174 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for incoming events').first().json.message.from.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "e365141d-d35d-409b-968c-eda449793520",
+      "name": "Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        580,
+        0
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "5e563bff-e8a0-42bb-9c4b-2a99a45c83d1",
+      "credentials": {
+        "telegramApi": {
+          "id": "jcfc5w6wt9FJQ3aR",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for incoming events').first().json.message.from.id }}",
+        "text": "={{ $('AI Agent1').item.json.output.replace(/&/g, \"&amp;\").replace(/>/g, \"&gt;\").replace(/</g, \"&lt;\").replace(/\"/g, \"&quot;\") }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "203e912a-3231-439b-8a99-27d036fa6218",
+      "name": "Correct errors",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        780,
+        0
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "f3428e1b-50c4-4f46-8fa5-249ae242f2c0",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "10966197-0340-4365-aca3-23c1c3052da8",
+      "name": "Listen for incoming events",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "322dce18-f93e-4f86-b9b1-3305519b7834",
+      "typeVersion": 1,
+      "credentials": {
+        "telegramApi": {
+          "id": "jcfc5w6wt9FJQ3aR",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        180,
+        240
+      ],
+      "id": "b223dcb9-5afc-4c54-86a1-1561a4f8d772",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lHk7yrgxil328v8f",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={\n    \"contents\": [\n      {\n        \"parts\": [\n          {\n            \"text\": \"You Are a Sarcastic and Funny AI. Always answer with a humorous twist, and keep it under 100 words and answer in the same language being sent to in: {{ $json.message.text }}\"\n          }\n        ]\n      }\n    ]\n  } ",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Listen for incoming events').item.json.message.text }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        220,
+        20
+      ],
+      "id": "2760f92d-c2d2-4fd7-b17f-b3b11a22568a",
+      "name": "Basic LLM Chain"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Correct errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listen for incoming events": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "64330eb1-b280-485c-91a9-11e9716b4387",
+  "meta": {
+    "instanceId": "84be78ab044af263b65fde9d15afa1b8ca26c13fc9e4b3e7c7f57e540c91f6d5"
+  },
+  "id": "ztJZzRneQqnsE0bZ",
+  "tags": []
+}
