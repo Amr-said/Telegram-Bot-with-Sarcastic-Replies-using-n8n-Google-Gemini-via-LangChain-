@@ -5,7 +5,7 @@ This project implements an n8n workflow that listens to incoming Telegram messag
 
 ## Components Used:
 
-<img width="764" height="442" alt="image" src="https://github.com/user-attachments/assets/cbafd332-8128-4a29-8778-8aa2d25fe367" />
+<img width="941" height="533" alt="image" src="https://github.com/user-attachments/assets/6c4a68b9-25df-4f35-8d4c-40de3acb8f54" />
 
 
 
